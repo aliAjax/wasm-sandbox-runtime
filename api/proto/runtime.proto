@@ -1,0 +1,13 @@
+syntax = "proto3";
+package sandbox.runtime.v1;
+option go_package = "github.com/example/wasm-sandbox-runtime/api/proto";
+service Runtime { rpc Execute(ExecuteRequest) returns (ExecuteResponse); rpc Cancel(CancelRequest) returns (CancelResponse); rpc Checkpoint(CheckpointRequest) returns (CheckpointResponse); }
+service Module { rpc Inspect(InspectRequest) returns (InspectResponse); }
+message ExecuteRequest { string execution_id = 1; string tenant_id = 2; string module_version_id = 3; bytes input = 4; }
+message ExecuteResponse { string digest = 1; bytes output = 2; string state = 3; }
+message CancelRequest { string execution_id = 1; }
+message CancelResponse { bool accepted = 1; }
+message CheckpointRequest { string execution_id = 1; }
+message CheckpointResponse { string digest = 1; uint64 sequence = 2; }
+message InspectRequest { bytes wasm = 1; }
+message InspectResponse { repeated string imports = 1; repeated string exports = 2; uint64 instructions = 3; }

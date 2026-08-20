@@ -1,0 +1,12 @@
+http:
+  address: ":8087"
+  max_body_bytes: 4194304
+runtime:
+  adapter: go-safe-simulator
+  deterministic_default: true
+scheduler:
+  workers: 4
+  queue_size: 256
+security:
+  require_read_only_mounts: true
+  audit_hash_chain: true

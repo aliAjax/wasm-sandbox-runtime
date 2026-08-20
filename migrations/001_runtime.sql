@@ -1,0 +1,5 @@
+CREATE TABLE modules (id text PRIMARY KEY, tenant_id text NOT NULL, name text NOT NULL, state text NOT NULL, created_at timestamptz NOT NULL, updated_at timestamptz NOT NULL, UNIQUE (tenant_id, name));
+CREATE TABLE module_versions (id text PRIMARY KEY, module_id text NOT NULL REFERENCES modules(id), number integer NOT NULL, digest text NOT NULL UNIQUE, entrypoint text NOT NULL, limits_json jsonb NOT NULL, signature_json jsonb NOT NULL, created_at timestamptz NOT NULL, UNIQUE(module_id, number));
+CREATE TABLE executions (id text PRIMARY KEY, tenant_id text NOT NULL, module_version_id text NOT NULL, idempotency_key text, state text NOT NULL, priority integer NOT NULL, input_digest text NOT NULL, result_digest text, deadline timestamptz NOT NULL, version bigint NOT NULL, created_at timestamptz NOT NULL, updated_at timestamptz NOT NULL, UNIQUE(tenant_id, idempotency_key));
+CREATE TABLE execution_events (id bigserial PRIMARY KEY, execution_id text NOT NULL, state text NOT NULL, payload jsonb NOT NULL, created_at timestamptz NOT NULL);
+CREATE INDEX executions_queue_idx ON executions(state, priority DESC, created_at);

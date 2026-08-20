@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: wasm-sandbox-runtime}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: wasm-sandbox-runtime}}
+  template:
+    metadata: {labels: {app: wasm-sandbox-runtime}}
+    spec:
+      containers:
+        - name: sandboxd
+          image: wasm-sandbox-runtime:latest
+          ports: [{containerPort: 8087}]
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, runAsNonRoot: true}
+          readinessProbe: {httpGet: {path: /readyz, port: 8087}}
+          livenessProbe: {httpGet: {path: /healthz, port: 8087}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: wasm-sandbox-runtime}
+spec: {selector: {app: wasm-sandbox-runtime}, ports: [{port: 8087, targetPort: 8087}]}

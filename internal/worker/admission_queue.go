@@ -22,6 +22,9 @@ func NewAdmissionQueue(capacity int) *AdmissionQueue {
 func (q *AdmissionQueue) Push(j job) bool {
 	q.mu.Lock()
 	defer q.mu.Unlock()
+	if q.closed {
+		return false
+	}
 	if len(q.items) >= q.capacity {
 		return false
 	}

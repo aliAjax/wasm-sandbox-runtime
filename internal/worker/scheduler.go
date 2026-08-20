@@ -21,6 +21,7 @@ type Scheduler struct {
 	queue    chan job
 	stop     chan struct{}
 	done     chan struct{}
+	wg       sync.WaitGroup
 	mu       sync.Mutex
 	stopOnce sync.Once
 	seen     map[string]struct{}
@@ -36,6 +37,7 @@ func NewScheduler(s *application.Service, n int) *Scheduler {
 func (s *Scheduler) Start() {
 	go s.dispatch()
 	for i := 0; i < s.workers; i++ {
+		s.wg.Add(1)
 		go s.run(i)
 	}
 }
@@ -79,6 +81,7 @@ func (s *Scheduler) enqueue() {
 	}
 }
 func (s *Scheduler) run(index int) {
+	defer s.wg.Done()
 	workerID := fmt.Sprintf("worker-%d", index)
 	for {
 		select {
@@ -97,9 +100,7 @@ func (s *Scheduler) run(index int) {
 	}
 }
 func (s *Scheduler) Stop() {
-	close(s.stop)
-	select {
-	case <-s.done:
-	case <-time.After(time.Second):
-	}
+	s.stopOnce.Do(func() { close(s.stop) })
+	<-s.done
+	s.wg.Wait()
 }

@@ -15,6 +15,9 @@ func (r Recovery) ShouldRetry(attempts int, err error) bool {
 	return err != nil && attempts < r.MaxAttempts
 }
 func (r Recovery) ShouldRetryContext(ctx context.Context, attempts int, err error) bool {
+	if ctx.Err() != nil {
+		return false
+	}
 	return r.ShouldRetry(attempts, err)
 }
 func (r Recovery) Next(attempts int) time.Duration { return r.Backoff.Duration(attempts) }

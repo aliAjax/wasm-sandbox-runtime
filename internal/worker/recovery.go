@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -12,6 +13,9 @@ type Recovery struct {
 
 func (r Recovery) ShouldRetry(attempts int, err error) bool {
 	return err != nil && attempts < r.MaxAttempts
+}
+func (r Recovery) ShouldRetryContext(ctx context.Context, attempts int, err error) bool {
+	return r.ShouldRetry(attempts, err)
 }
 func (r Recovery) Next(attempts int) time.Duration { return r.Backoff.Duration(attempts) }
 func ValidateRecovery(r Recovery) error {

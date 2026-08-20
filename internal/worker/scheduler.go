@@ -16,14 +16,15 @@ type job struct {
 	created  time.Time
 }
 type Scheduler struct {
-	service *application.Service
-	workers int
-	queue   chan job
-	stop    chan struct{}
-	done    chan struct{}
-	mu      sync.Mutex
-	seen    map[string]struct{}
-	log     *slog.Logger
+	service  *application.Service
+	workers  int
+	queue    chan job
+	stop     chan struct{}
+	done     chan struct{}
+	mu       sync.Mutex
+	stopOnce sync.Once
+	seen     map[string]struct{}
+	log      *slog.Logger
 }
 
 func NewScheduler(s *application.Service, n int) *Scheduler {

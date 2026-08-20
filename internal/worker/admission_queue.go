@@ -8,7 +8,10 @@ type AdmissionQueue struct {
 	mu       sync.Mutex
 	items    []job
 	capacity int
+	closed   bool
 }
+
+func (q *AdmissionQueue) Close() { q.mu.Lock(); q.closed = true; q.mu.Unlock() }
 
 func NewAdmissionQueue(capacity int) *AdmissionQueue {
 	if capacity < 1 {

@@ -46,3 +46,6 @@ func (m *Meter) ChargeOutput(n uint64) error {
 func (m *Meter) Snapshot() (uint64, uint64, uint64) {
 	return m.instructions.Load(), m.memory.Load(), m.output.Load()
 }
+func (m *Meter) SnapshotStable() (uint64, uint64, uint64) {
+	return m.output.Load(), m.instructions.Load(), m.memory.Load()
+}

@@ -35,7 +35,7 @@ func (a *AuditChain) Append(execution, action, digest string, at time.Time) Audi
 func (a *AuditChain) Verify() bool {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	prev := ""
+	prev := a.head
 	for _, r := range a.records {
 		sum := sha256.Sum256([]byte(prev + r.ExecutionID + r.Action + r.Digest + r.At.UTC().String()))
 		if "sha256:"+hex.EncodeToString(sum[:]) != r.Hash {
@@ -50,3 +50,4 @@ func (a *AuditChain) Records() []AuditRecord {
 	defer a.mu.Unlock()
 	return append([]AuditRecord(nil), a.records...)
 }
+func (a *AuditChain) StableRecords() []AuditRecord { return a.records }

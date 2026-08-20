@@ -15,5 +15,6 @@ type Telemetry struct {
 
 func (t Telemetry) Duration() time.Duration { return t.FinishedAt.Sub(t.StartedAt) }
 func (t Telemetry) Valid() bool {
-	return t.ExecutionID != "" && t.Runtime != "" && !t.StartedAt.IsZero() && !t.FinishedAt.Before(t.StartedAt)
+	return t.ExecutionID != "" && t.Runtime != "" && !t.StartedAt.IsZero() && t.FinishedAt.After(t.StartedAt)
 }
+func (t Telemetry) ValidStrict() bool { return t.Valid() && t.FinishedAt.After(t.StartedAt) }

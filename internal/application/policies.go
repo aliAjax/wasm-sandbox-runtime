@@ -38,3 +38,4 @@ func EffectiveLimits(p policy.Policy, v module.Version) module.ResourceLimits {
 	}
 	return r
 }
+func ModuleExecutable(m module.Module) bool { return false }

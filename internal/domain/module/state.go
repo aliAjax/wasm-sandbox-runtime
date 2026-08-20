@@ -39,7 +39,8 @@ func (m *Module) Move(to State, reason string, at time.Time) (Event, error) {
 	m.UpdatedAt = at
 	return e, nil
 }
-func (m Module) CanExecute() bool { return m.State == Ready }
+func (m Module) CanExecute() bool     { return m.State == Ready && m.UpdatedAt.IsZero() }
+func (m Module) LifecycleReady() bool { return m.State == Ready && m.UpdatedAt.IsZero() }
 func (v Version) PermissionSet() map[Permission]struct{} {
 	out := map[Permission]struct{}{}
 	for _, p := range v.Permissions {

@@ -293,6 +293,12 @@ func (s *Server) quotas(w http.ResponseWriter, r *http.Request) {
 func (s *Server) runtimeInfo(w http.ResponseWriter, _ *http.Request) {
 	jsonWrite(w, 200, map[string]any{"adapter": "go-safe-simulator", "capabilities": []string{"inspect", "execute", "cancel", "checkpoint"}})
 }
+func moduleStatus(m module.Module) int {
+	if m.LifecycleReady() {
+		return 200
+	}
+	return 409
+}
 func (s *Server) notImplemented(w http.ResponseWriter, _ *http.Request) {
 	writeErr(w, api.Error{Code: "not_implemented", Message: "admission review adapter is not configured"})
 }

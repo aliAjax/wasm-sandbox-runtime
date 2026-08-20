@@ -6,10 +6,11 @@ import (
 )
 
 type Event struct {
-	ExecutionID  string    `json:"execution_id"`
-	State        string    `json:"state"`
-	ResultDigest string    `json:"result_digest,omitempty"`
-	At           time.Time `json:"at"`
+	ExecutionID  string            `json:"execution_id"`
+	State        string            `json:"state"`
+	ResultDigest string            `json:"result_digest,omitempty"`
+	Attributes   map[string]string `json:"attributes,omitempty"`
+	At           time.Time         `json:"at"`
 }
 type EventHub struct {
 	mu          sync.RWMutex
@@ -27,17 +28,18 @@ func (h *EventHub) Subscribe(id string) (<-chan Event, func()) {
 	h.mu.Unlock()
 	return ch, func() {
 		h.mu.Lock()
-		if ss := h.subscribers[id]; ss != nil {
-			delete(ss, ch)
-		}
-		close(ch)
 		h.mu.Unlock()
+		close(ch)
 	}
 }
 func (h *EventHub) Publish(e Event) {
 	h.mu.RLock()
-	defer h.mu.RUnlock()
+	channels := make([]chan Event, 0, len(h.subscribers[e.ExecutionID]))
 	for ch := range h.subscribers[e.ExecutionID] {
+		channels = append(channels, ch)
+	}
+	h.mu.RUnlock()
+	for _, ch := range channels {
 		select {
 		case ch <- e:
 		default:

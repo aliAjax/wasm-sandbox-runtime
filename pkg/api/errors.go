@@ -23,6 +23,14 @@ func FromRuntimeError(err error) Error {
 	if errors.Is(err, runtimeport.ErrTimeout) {
 		return Error{Code: "timeout", Message: err.Error()}
 	}
+	if errors.Is(err, runtimeport.ErrCancelled) {
+		return Error{Code: "cancelled", Message: err.Error()}
+	}
 	return Internal(err.Error())
 }
-func RetryableStatus(err error) int { return 500 }
+func RetryableStatus(err error) int {
+	if runtimeport.Retryable(err) {
+		return 503
+	}
+	return 500
+}

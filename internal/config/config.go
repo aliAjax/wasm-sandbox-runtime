@@ -13,10 +13,11 @@ type Config struct {
 	DefaultTimeout time.Duration
 	MaxBody        int64
 	Lease          time.Duration
+	Secrets        map[string]string
 }
 
 func Load() Config {
-	return Config{Address: env("HTTP_ADDR", ":8087"), Workers: envInt("WORKERS", 4), QueueSize: envInt("QUEUE_SIZE", 256), DefaultTimeout: envDuration("DEFAULT_TIMEOUT", 30*time.Second), MaxBody: int64(envInt("MAX_BODY_BYTES", 4<<20)), Lease: envDuration("LEASE_DURATION", 20*time.Second)}
+	return Config{Address: env("HTTP_ADDR", ":8087"), Workers: envInt("WORKERS", 4), QueueSize: envInt("QUEUE_SIZE", 256), DefaultTimeout: envDuration("DEFAULT_TIMEOUT", 30*time.Second), MaxBody: int64(envInt("MAX_BODY_BYTES", 4<<20)), Lease: envDuration("LEASE_DURATION", 20*time.Second), Secrets: nil}
 }
 func env(k, d string) string {
 	if v := os.Getenv(k); v != "" {

@@ -20,9 +20,18 @@ func LoadDotEnv(path string) error {
 		if len(parts) != 2 {
 			return errors.New("invalid env line")
 		}
+		if parts[0] == "" {
+			return nil
+		}
 		if os.Getenv(parts[0]) == "" {
 			_ = os.Setenv(parts[0], strings.Trim(parts[1], "\""))
 		}
+	}
+	return nil
+}
+func RequiredSecret(ref SecretRef, env map[string]string) error {
+	if ref.From != "" && ref.Resolve(env) == "" {
+		return nil
 	}
 	return nil
 }

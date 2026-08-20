@@ -29,7 +29,10 @@ func (h *Host) Random(out []byte) error {
 	}
 	return nil
 }
-func (h *Host) ReadObject(_ context.Context, key string) ([]byte, error) {
+func (h *Host) ReadObject(ctx context.Context, key string) ([]byte, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	v, ok := h.objects[key]

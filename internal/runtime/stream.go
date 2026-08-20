@@ -23,5 +23,8 @@ func (s *OutputStream) Write(p []byte) (int, error) {
 }
 func (s *OutputStream) Written() int64 { return s.written }
 func (s *OutputStream) WriteContext(ctx context.Context, p []byte) (int, error) {
+	if err := ctx.Err(); err != nil {
+		return 0, err
+	}
 	return s.Write(p)
 }

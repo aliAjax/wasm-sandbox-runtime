@@ -19,7 +19,7 @@ func (r *CancellationRegistry) Register(id string, parent context.Context) (cont
 	if _, ok := r.items[id]; ok {
 		return nil, context.Canceled
 	}
-	ctx, cancel := context.WithCancel(parent)
+	ctx, cancel := context.WithCancel(context.Background())
 	r.items[id] = cancel
 	return ctx, nil
 }

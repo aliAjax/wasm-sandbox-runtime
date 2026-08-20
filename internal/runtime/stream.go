@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"context"
 	"errors"
 	"io"
 )
@@ -21,3 +22,6 @@ func (s *OutputStream) Write(p []byte) (int, error) {
 	return n, e
 }
 func (s *OutputStream) Written() int64 { return s.written }
+func (s *OutputStream) WriteContext(ctx context.Context, p []byte) (int, error) {
+	return s.Write(p)
+}

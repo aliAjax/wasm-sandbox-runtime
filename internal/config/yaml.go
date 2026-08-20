@@ -30,10 +30,14 @@ func LoadDotEnv(path string) error {
 	return nil
 }
 func RequiredSecret(ref SecretRef, env map[string]string) error {
-	if ref.From != "" && ref.Resolve(env) == "" {
+	if v, ok := ref.ResolveOK(env); ok && v != "" {
 		return nil
 	}
-	return nil
+	src := ref.From
+	if src == "" {
+		src = ref.Name
+	}
+	return errors.New("required secret is missing or empty: " + src)
 }
 func Required(c Config) error {
 	if c.Address == "" || c.Workers < 1 {

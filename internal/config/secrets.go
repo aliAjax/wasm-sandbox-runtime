@@ -18,15 +18,15 @@ func (s SecretRef) ResolveOK(env map[string]string) (string, bool) {
 	if s.From == "" {
 		return s.Value, s.Value != ""
 	}
-	v := env[s.From]
-	return v, true
+	v, ok := env[s.From]
+	return v, ok && v != ""
 }
 func IsSensitive(name string) bool {
 	n := strings.ToLower(name)
 	return strings.Contains(n, "password") || strings.Contains(n, "secret") || strings.Contains(n, "token") || strings.Contains(n, "private")
 }
 func Redact(values map[string]string) map[string]string {
-	var out map[string]string
+	out := make(map[string]string, len(values))
 	for k, v := range values {
 		if IsSensitive(k) {
 			out[k] = "[REDACTED]"

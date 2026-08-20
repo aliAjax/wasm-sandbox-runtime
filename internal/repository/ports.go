@@ -12,7 +12,12 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
-func ValidateStoreContract(s Store) error { return nil }
+func ValidateStoreContract(s Store) error {
+	if s == nil {
+		return errors.New("store contract rejected: nil store")
+	}
+	return nil
+}
 
 type Store interface {
 	CreateModule(context.Context, module.Module) error

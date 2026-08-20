@@ -34,10 +34,15 @@ func (u *UnitOfWork) CommitChecked() error {
 	if u.closed {
 		return errors.New("transaction closed")
 	}
-	for _, action := range u.checked {
-		_ = action()
-	}
 	u.closed = true
+	for _, action := range u.checked {
+		if err := action(); err != nil {
+			u.actions = nil
+			u.checked = nil
+			return err
+		}
+	}
+	u.actions = nil
 	u.checked = nil
 	return nil
 }
@@ -47,11 +52,22 @@ func (u *UnitOfWork) Commit() error {
 	if u.closed {
 		return errors.New("transaction closed")
 	}
+	u.closed = true
 	for _, a := range u.actions {
 		a()
 	}
-	u.closed = true
+	u.actions = nil
+	u.checked = nil
 	return nil
 }
-func (u *UnitOfWork) Rollback()              { u.mu.Lock(); defer u.mu.Unlock(); u.actions = nil; u.checked = nil }
-func (u *UnitOfWork) Failed(err error) error { return err }
+func (u *UnitOfWork) Rollback() {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+	u.closed = true
+	u.actions = nil
+	u.checked = nil
+}
+func (u *UnitOfWork) Failed(err error) error {
+	u.Rollback()
+	return err
+}

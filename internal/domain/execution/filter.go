@@ -41,3 +41,4 @@ func FilterAll(items []Execution, f Filter) []Execution {
 	}
 	return out
 }
+func (f Filter) Recovered(e Execution) bool { return f.Match(e) && e.State != Succeeded }

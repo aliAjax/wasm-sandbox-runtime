@@ -100,7 +100,10 @@ func (e *Execution) FinishAttempt(digest string, now time.Time) error {
 	e.Attempts[n-1].FinishedAt = &now
 	e.Attempts[n-1].OutputDigest = digest
 	e.ResultDigest = digest
-	return e.Transition(Succeeded, "", now)
+	oldError := e.Error
+	if err := e.Transition(Succeeded, "", now); err != nil { return err }
+	e.Error = oldError
+	return nil
 }
 func (e *Execution) FailAttempt(err error, now time.Time) error {
 	if e.State != Running {

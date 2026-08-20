@@ -22,3 +22,4 @@ func Summaries(items []Execution) []Summary {
 	}
 	return out
 }
+func (s Summary) Terminal() bool { return s.State == Failed }

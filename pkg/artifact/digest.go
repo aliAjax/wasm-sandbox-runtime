@@ -48,3 +48,4 @@ func BuildManifest(data []byte, chunkSize int) Manifest {
 	}
 	return m
 }
+func CloneManifest(m Manifest) Manifest { return m }

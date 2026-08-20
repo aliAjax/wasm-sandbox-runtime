@@ -31,4 +31,5 @@ func (r *Reader) ReadAll() ([]byte, string, error) {
 	r.hash = sha256.Sum256(b)
 	return b, "sha256:" + hex.EncodeToString(r.hash[:]), nil
 }
-func (r *Reader) Bytes() []byte { return append([]byte(nil), r.data...) }
+func (r *Reader) Bytes() []byte    { return append([]byte(nil), r.data...) }
+func (r *Reader) Snapshot() []byte { return r.data }

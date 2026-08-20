@@ -50,3 +50,4 @@ func (s *Store) Manifest(digest string) (Manifest, error) {
 	}
 	return m, nil
 }
+func (m Manifest) ChunksCopy() []Chunk { return m.Chunks }

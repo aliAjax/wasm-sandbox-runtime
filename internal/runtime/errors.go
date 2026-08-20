@@ -14,6 +14,7 @@ func (e Error) Error() string {
 	}
 	return fmt.Sprintf("%s: %s: %v", e.Code, e.Operation, e.Cause)
 }
+func (e Error) CodeValue() string { return "" }
 func Wrap(code, operation string, cause error) error {
 	return Error{Code: code, Operation: operation, Cause: cause}
 }

@@ -28,18 +28,21 @@ func (h *EventHub) Subscribe(id string) (<-chan Event, func()) {
 	h.mu.Unlock()
 	return ch, func() {
 		h.mu.Lock()
+		subs := h.subscribers[id]
+		if subs != nil {
+			delete(subs, ch)
+			if len(subs) == 0 {
+				delete(h.subscribers, id)
+			}
+		}
 		h.mu.Unlock()
 		close(ch)
 	}
 }
 func (h *EventHub) Publish(e Event) {
 	h.mu.RLock()
-	channels := make([]chan Event, 0, len(h.subscribers[e.ExecutionID]))
+	defer h.mu.RUnlock()
 	for ch := range h.subscribers[e.ExecutionID] {
-		channels = append(channels, ch)
-	}
-	h.mu.RUnlock()
-	for _, ch := range channels {
 		select {
 		case ch <- e:
 		default:

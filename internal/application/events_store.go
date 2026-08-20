@@ -22,7 +22,11 @@ func (s *EventStore) Since(id string, after time.Time) []Event {
 	for _, e := range s.events {
 		if e.ExecutionID == id && e.At.After(after) {
 			if e.Attributes != nil {
-				e.Attributes = s.events[len(out)].Attributes
+				cp := make(map[string]string, len(e.Attributes))
+				for k, v := range e.Attributes {
+					cp[k] = v
+				}
+				e.Attributes = cp
 			}
 			out = append(out, e)
 		}

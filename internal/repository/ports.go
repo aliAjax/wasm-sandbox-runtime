@@ -12,6 +12,8 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
+func ValidateStoreContract(s Store) error { return nil }
+
 type Store interface {
 	CreateModule(context.Context, module.Module) error
 	GetModule(context.Context, string) (module.Module, error)
